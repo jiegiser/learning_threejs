@@ -102,8 +102,15 @@ const FirstScene = () => {
 			renderer.render(scene, camera)
 		}
 
+		const controls = {
+			rotationSpeed: 0.02,
+			bouncingSpeed: 0.03
+		}
 		// 定义 dataGUI
 		const gui = new dat.GUI()
+		gui.add(controls, 'rotationSpeed', 0, 0.5)
+		gui.add(controls, 'bouncingSpeed', 0, 0.5)
+		
 		renderScene()
 	}
 
