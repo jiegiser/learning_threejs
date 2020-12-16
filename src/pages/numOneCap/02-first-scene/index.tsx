@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import * as dat from 'dat.gui'
+import { TrackballControls } from 'three-trackballcontrols-ts'
 
 const FirstScene = () => {
 
@@ -8,7 +9,6 @@ const FirstScene = () => {
 
 	const init = () => {
 		// 开启显示动画运行时的帧数
-
 		const scene = new THREE.Scene()
 		
 		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000)
@@ -80,27 +80,8 @@ const FirstScene = () => {
 		if (dom.current){
 		  dom.current.appendChild(renderer.domElement)
 		}
-
-		let step = 0
-		const renderScene = () => {
-			if ((window as any).statusAB instanceof Object) {
-				(window as any).statusAB.update()
-			}
-
-			// 旋转立方体
-			cube.rotation.x += 0.02
-			cube.rotation.y += 0.02
-			cube.rotation.z += 0.02
-
-			// 让小球弹跳起来
-			// 定义了球体的弹跳速度
-			step += 0.04
-			sphere.position.x = 20 + 10 * (Math.cos(step))
-			sphere.position.y = 2 + 10 * Math.abs(Math.sin(step))
-
-			requestAnimationFrame(renderScene)
-			renderer.render(scene, camera)
-		}
+		const trackballControls = new TrackballControls((camera as any), renderer.domElement)
+		const clock = new THREE.Clock()
 
 		const controls = {
 			rotationSpeed: 0.02,
@@ -108,10 +89,41 @@ const FirstScene = () => {
 		}
 		// 定义 dataGUI
 		const gui = new dat.GUI()
+		// 设置取值范围
 		gui.add(controls, 'rotationSpeed', 0, 0.5)
 		gui.add(controls, 'bouncingSpeed', 0, 0.5)
+
+		let step = 0
+		const renderScene = () => {		
+			(trackballControls as any).update(clock.getDelta())
+			
+			if ((window as any).statusAB instanceof Object) {
+				(window as any).statusAB.update()
+			}
+
+			// 旋转立方体
+			cube.rotation.x += controls.rotationSpeed
+			cube.rotation.y += controls.rotationSpeed
+			cube.rotation.z += controls.rotationSpeed
+
+			// 让小球弹跳起来
+			// 定义了球体的弹跳速度
+			step += controls.bouncingSpeed
+			sphere.position.x = 20 + 10 * (Math.cos(step))
+			sphere.position.y = 2 + 10 * Math.abs(Math.sin(step))
+
+			requestAnimationFrame(renderScene)
+			renderer.render(scene, camera)
+		}
 		
 		renderScene()
+
+		const onResize = () => {
+			camera.aspect = window.innerWidth / window.innerHeight
+			camera.updateProjectionMatrix()
+			renderer.setSize(window.innerWidth, window.innerHeight)
+		}
+		window.addEventListener('resize', onResize, false)
 	}
 
 	useEffect(() => {
