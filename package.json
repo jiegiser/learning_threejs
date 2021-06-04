@@ -12,6 +12,7 @@
     "@types/react-dom": "^16.9.10",
     "@types/react-router-dom": "^5.1.6",
     "dat.gui": "^0.7.7",
+    "es6-tween": "^5.5.11",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
